@@ -1,51 +1,41 @@
 # Linux Visual Interface — Rabbit Hopping Physics Sandbox
 
-Two ways to get the GUI on Linux:
+**Downloadable program (no AppImage bullshit that breaks):**
 
-## Option 1: AppImage (portable, no install)
+## Direct download (single file, just run it)
 
-1. Download `RabbitHoppingSandbox.AppImage` from the repo releases or raw file.
-2. Make it executable:
+1. Download `physics_app.py`:
+   https://raw.githubusercontent.com/One-Wave-Universe/RABBIT-HOPPING/main/sandbox/physics_app.py
+
+2. Make it executable and run:
    ```bash
-   chmod +x RabbitHoppingSandbox.AppImage
-   ```
-3. Run:
-   ```bash
-   ./RabbitHoppingSandbox.AppImage
+   chmod +x physics_app.py
+   python3 physics_app.py
    ```
 
-If it complains about missing libraries:
-```bash
-sudo apt install libgl1 libglib2.0-0 libxkbcommon0 libxcb-xinerama0
-```
-
-## Option 2: Build from source (recommended if you have Python)
-
+Or clone the whole repo:
 ```bash
 git clone https://github.com/One-Wave-Universe/RABBIT-HOPPING.git
 cd RABBIT-HOPPING
-pip install numpy scipy
+sudo apt update
+sudo apt install -y python3 python3-tk python3-pip libgl1 libglib2.0-0 libxkbcommon0 libxcb-xinerama0
+pip3 install --user numpy scipy
+python3 sandbox/physics_app.py
+```
+
+## If you want a real AppImage (build it yourself)
+
+```bash
 chmod +x sandbox/build_linux_app.sh
 ./sandbox/build_linux_app.sh
 ```
 
 This produces `RabbitHoppingSandbox.AppImage` in the repo root.
 
-## Option 3: Just run the script
-
-```bash
-python3 sandbox/physics_app.py
-```
-
-or use the launcher:
-```bash
-./sandbox/run_linux.sh
-```
-
 ## Requirements
 
 - Python 3.8+
-- tkinter (usually `sudo apt install python3-tk`)
+- tkinter (`sudo apt install python3-tk`)
 - numpy, scipy (`pip install numpy scipy`)
 
 ## What you get
