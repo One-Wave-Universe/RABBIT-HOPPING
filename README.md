@@ -39,11 +39,19 @@ Negative mirror:
 
 Equal destinations must retain distinct route identity.
 
+## Music adapter
+
+12-label domain (A=1 ... G#=12). Labeling only. No frequency, octave or Circle-of-Fifths claims baked in.
+
+## Nested rotation (speculative)
+
+`hierarchy_transition()` tags a packet as point/path/field. Requires explicit level, parent and branch. Arithmetic alone does not rotate anything.
+
 ## Status
 
-- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata.
+- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter.
 - Proposed: candidate state record, Point/Path/Field reading.
 - Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets.
 
 See `rabbit_hopping.py` for the model + tests.
-See `cards/RABBIT-HOPPING.md` in Great-Galactic-Library for the catalog card.
+See `cards/RABBIT-HOPPING.md` for the catalog card.

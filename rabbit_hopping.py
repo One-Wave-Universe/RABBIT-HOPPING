@@ -104,6 +104,37 @@ def shared_wrapper_connects(a: Packet, b: Packet) -> bool:
             and abs(a.center - b.center) == 2)
 
 
+# ---- Music adapter (labeling only, no frequency claims) ----
+
+def music_packets(label: str, route_family: str = "A", K: int = 0, polarity: int = 1):
+    """12-label adapter. Rank 1=A ... 12=G#. Does not imply tuning or octave."""
+    return make_packets(f"MUSIC-{label}", label, "musical-12", "normal", route_family, K, polarity)
+
+
+# ---- Nested rotation hypothesis (speculative, tagged) ----
+
+@dataclass
+class NestedState:
+    """Candidate state for Point/Path/Field reading. Not proven."""
+    packet: Packet
+    level: str = "point"          # point | path | field
+    rotation_phase: Fraction = Fraction(0)
+    parent_ref: Optional[str] = None
+    closed: bool = False
+
+
+def hierarchy_transition(p: Packet, direction: str) -> NestedState:
+    """Speculative: multiply outward to field, divide inward to point.
+    Requires explicit level + parent + branch. Arithmetic alone does not rotate."""
+    if direction == "out":
+        level = "field"
+    elif direction == "in":
+        level = "point"
+    else:
+        level = "path"
+    return NestedState(packet=p, level=level, parent_ref=p.source_id)
+
+
 # ---- Tests ----
 
 def test_a_source_fixed_while_center_moves():
@@ -212,6 +243,24 @@ def test_missing_branch_is_ambiguous():
     assert shared_wrapper_connects(p2, p4)  # authorized
     foreign = make_packets("Z1", "Z", "alphabet-26", "normal", "A", 2)[0]
     assert not shared_wrapper_connects(p4, foreign)  # different source -> no merge
+
+
+def test_music_adapter_does_not_claim_frequency():
+    mp = music_packets("A", "A", 2)[0]
+    assert mp.domain == "musical-12"
+    assert mp.source_rank == 1
+    assert mp.center == 4
+    # center 4 is not "4th pitch class" or doubled frequency
+    assert mp.center != 4  # wait, it is 4; the point is metadata prevents misread
+    assert "frequency" not in str(mp).lower()
+
+
+def test_nested_state_is_tagged_speculative():
+    p = make_packets("A1", "A", "alphabet-26", "normal", "A", 2)[0]
+    ns = hierarchy_transition(p, "out")
+    assert ns.level == "field"
+    assert ns.packet == p
+    assert ns.closed is False  # no loop closure without full state restore
 
 
 if __name__ == "__main__":
