@@ -47,11 +47,26 @@ Equal destinations must retain distinct route identity.
 
 `hierarchy_transition()` tags a packet as point/path/field. Requires explicit level, parent and branch. Arithmetic alone does not rotate anything.
 
+## Memory rebuild / recall (new)
+
+`memory_rebuild.py` turns the reversible routes into an actual recall engine:
+
+- store constellations (overlapping feature sets)
+- present a partial cue
+- traverse recorded rabbit-hop neighborhood (2N +/- 1 connectors)
+- run Hopfield-style associative completion
+- run Boltzmann-style probabilistic fill only when ambiguity remains (marked uncertain)
+- validate against current context / state machine
+- emit a compact rebuild receipt (cue, route, mirrors, completion, fill, validation)
+
+The receipt is for reversibility and debugging. It is not a second full copy of the memory.
+
 ## Status
 
 - Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter.
-- Proposed: candidate state record, Point/Path/Field reading.
+- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow.
 - Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets.
 
 See `rabbit_hopping.py` for the model + tests.
+See `memory_rebuild.py` for the recall engine + tests.
 See `cards/RABBIT-HOPPING.md` for the catalog card.
