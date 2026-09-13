@@ -372,19 +372,19 @@ class PhysicsApp:
                     c.create_rectangle(x, y - bh, x + 40, y, fill=col, outline=col)
                 else:
                     c.create_rectangle(x, y, x + 40, y + bh, fill=col, outline=col)
-                c.create_text(x + 20, y + 40, text=f"{v:.2f}", fill="#aaa", font=("Courier", 8))
+        self.hop_readout.config(text=f"Recovered matches target: {np.allclose(np.sign(s), p1, atol=0.2)}")
 
     # ---------- REINJECTION TAB ----------
     def _build_reinj_tab(self):
         f = self.tab_reinj
         ctrl = tk.Frame(f, bg="#0a0a0f")
         ctrl.pack(fill="x", padx=10, pady=5)
-        tk.Label(ctrl, text="Band:", fg="#aaa", bg="#0a0a0f", font=("Courier", 10)).pack(side="left")
-        self.reinj_band = tk.DoubleVar(value=0.1)
-        tk.Scale(ctrl, from_=0.01, to=1.0, resolution=0.01, orient="horizontal", length=150,
-                 variable=self.reinj_band, bg="#0a0a0f", fg="#00ff9f", troughcolor="#222").pack(side="left", padx=5)
-        tk.Button(ctrl, text="STEP D VALUES", bg="#003322", fg="#00ff9f", font=("Courier", 10, "bold"),
-                  command=self._step_reinj).pack(side="left", padx=10)
+        tk.Label(ctrl, text="D value:", fg="#aaa", bg="#0a0a0f", font=("Courier", 10)).pack(side="left")
+        self.reinj_d = tk.DoubleVar(value=0.0)
+        tk.Scale(ctrl, from_=-1.0, to=1.0, resolution=0.01, orient="horizontal", length=200,
+                 variable=self.reinj_d, bg="#0a0a0f", fg="#00ff9f", troughcolor="#222").pack(side="left", padx=5)
+        tk.Button(ctrl, text="CHECK", bg="#003322", fg="#00ff9f", font=("Courier", 10, "bold"),
+                  command=self._check_reinj).pack(side="left", padx=10)
         tk.Button(ctrl, text="RESET", bg="#222", fg="#aaa", font=("Courier", 10),
                   command=self._reset_reinj).pack(side="left", padx=5)
         self.reinj_canvas = tk.Canvas(f, bg="#050508", highlightthickness=0)
@@ -392,95 +392,90 @@ class PhysicsApp:
         self.reinj_canvas.bind("<Configure>", lambda e: self._draw_reinj())
         self.reinj_readout = tk.Label(f, text="", fg="#00ff9f", bg="#0a0a0f", font=("Courier", 11))
         self.reinj_readout.pack(fill="x", padx=10, pady=5)
-        self._reinj_Ds = []
 
-    def _step_reinj(self):
-        self.reinj = ReinjectionLoop(band=self.reinj_band.get())
-        self._reinj_Ds = []
-        for _ in range(30):
-            D = np.random.uniform(-0.5, 0.5)
-            fired = self.reinj.check(D)
-            self._reinj_Ds.append((D, fired))
+    def _check_reinj(self):
+        d = self.reinj_d.get()
+        fired = self.reinj.check(d)
         self._draw_reinj()
-        nfire = sum(1 for _, f in self._reinj_Ds if f)
-        self._log(f"Reinjection: {nfire}/30 fired (band={self.reinj_band.get()})")
+        self.reinj_readout.config(text=f"D={d:.3f}  fired={fired}  total_fired={self.reinj.fired}")
+        self._log(f"Reinjection check: D={d:.3f} -> {'FIRE' if fired else 'hold'}")
 
     def _reset_reinj(self):
-        self._reinj_Ds = []; self.reinj = ReinjectionLoop(band=self.reinj_band.get())
+        self.reinj = ReinjectionLoop(band=0.1)
         self._draw_reinj()
+        self.reinj_readout.config(text="")
+        self._log("Reinjection reset")
 
     def _draw_reinj(self):
         c = self.reinj_canvas
         c.delete("all")
         w = c.winfo_width(); h = c.winfo_height()
         if w < 10 or h < 10: return
-        if not self._reinj_Ds:
-            c.create_text(w//2, h//2, text="Press STEP D VALUES", fill="#555", font=("Courier", 12))
-            return
-        c.create_text(w//2, 20, text="DIFFERENTIAL D  (fire when |D| > band)", fill="#00ff9f", font=("Courier", 11, "bold"))
+        c.create_text(w//2, 20, text="REINJECTION FIRING LOG", fill="#00ff9f", font=("Courier", 12, "bold"))
+        # band visualization
         pad = 50
-        maxd = max(abs(d) for d, _ in self._reinj_Ds) + 0.1
-        def sx(i): return pad + i / max(len(self._reinj_Ds)-1, 1) * (w - 2*pad)
-        def sy(d): return h - pad - (d + maxd) / (2*maxd) * (h - 2*pad)
+        cy = h * 0.5
+        c.create_line(pad, cy, w-pad, cy, fill="#333")
         # band lines
-        c.create_line(pad, sy(self.reinj.band), w-pad, sy(self.reinj.band), fill="#ff5555", dash=(3,3))
-        c.create_line(pad, sy(-self.reinj.band), w-pad, sy(-self.reinj.band), fill="#ff5555", dash=(3,3))
-        c.create_text(w-60, sy(self.reinj.band)-10, text=f"+band={self.reinj.band}", fill="#ff5555", font=("Courier", 8))
-        # points
-        for i, (d, fired) in enumerate(self._reinj_Ds):
-            x, y = sx(i), sy(d)
-            col = "#ff00aa" if fired else "#00ff9f"
-            c.create_oval(x-3, y-3, x+3, y+3, fill=col, outline=col)
-        # connect
-        coords = []
-        for i, (d, _) in enumerate(self._reinj_Ds):
-            coords.append(sx(i)); coords.append(sy(d))
-        c.create_line(coords, fill="#333", width=1)
-        nfire = sum(1 for _, f in self._reinj_Ds if f)
-        self.reinj_readout.config(text=f"Fired: {nfire}/{len(self._reinj_Ds)}  |  band={self.reinj.band}  |  differential-triggered, no timer")
+        band_y_up = cy - 30
+        band_y_dn = cy + 30
+        c.create_line(pad, band_y_up, w-pad, band_y_up, fill="#ff5555", dash=(2,2))
+        c.create_line(pad, band_y_dn, w-pad, band_y_dn, fill="#ff5555", dash=(2,2))
+        c.create_text(w-60, band_y_up-10, text="+band", fill="#ff5555", font=("Courier", 8))
+        c.create_text(w-60, band_y_dn+10, text="-band", fill="#ff5555", font=("Courier", 8))
+        # history dots
+        if self.reinj.history:
+            n = len(self.reinj.history)
+            for i, (d, fired) in enumerate(self.reinj.history[-50:]):
+                x = pad + (i / 50.0) * (w - 2*pad)
+                y = cy - (d / 1.0) * 30
+                col = "#ff00aa" if fired else "#00ff9f"
+                c.create_oval(x-3, y-3, x+3, y+3, fill=col, outline=col)
+        self.reinj_readout.config(text=f"Total fires: {self.reinj.fired}  |  band=0.1")
 
-    # ---------- CELL CONTROLS ----------
+    # ---------- CONTROLS ----------
     def _toggle_run(self):
         if self.running:
             self.running = False
-            self.btn_run.config(text="RUN", bg="#003322")
-            self._log("Cell stack paused.")
+            self.btn_run.config(text="RUN")
+            self._log("Paused.")
         else:
             self.running = True
-            self.btn_run.config(text="PAUSE", bg="#330000")
-            self.stack.R27 = self.r27_var.get()
+            self.btn_run.config(text="PAUSE")
+            self._log("Running cell stack...")
             self.sim_thread = threading.Thread(target=self._sim_loop, daemon=True)
             self.sim_thread.start()
-            self._log("Cell stack running.")
 
     def _sim_loop(self):
         while self.running:
             self.stack.step(drive_V=self.drive_var.get(), dt=1e-3)
+            self.stack.R27 = self.r27_var.get()
             self.root.after(0, self._draw_cell)
-            self.root.after(0, lambda: self.cell_readout.config(text=self.stack.report()))
             time.sleep(0.05)
 
     def _power_off(self):
         self.stack.power_off()
-        self._log(f"POWER OFF. Magnetic hold: w_BC={self.stack.BC.w*1e9:.3f}n (persists)")
+        self._log("POWER OFF - magnetic hold active (state persists)")
         self._draw_cell()
 
     def _power_on(self):
         self.stack.power_on()
-        self._log("POWER ON. State retained by memristor latch.")
+        self._log("POWER ON - state retained")
         self._draw_cell()
 
     def _reset_stack(self):
         self.stack = CellStack(R27=self.r27_var.get(), band=0.05, seed=7)
-        self._log("Cell stack reset.")
+        self._log("Cell stack reset")
         self._draw_cell()
 
     def _log(self, msg):
-        self.log.insert("end", f"> {msg}\n")
+        self.log.insert("end", msg + "\n")
         self.log.see("end")
 
-
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     app = PhysicsApp(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()
