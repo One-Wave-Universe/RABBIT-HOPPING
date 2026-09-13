@@ -69,14 +69,27 @@ Equal destinations must retain distinct route identity.
 
 Integrated as `QuadraticCell`: quadratic attractor + latch + reinject loop. Tests cover separation, hold-after-power-off, differential trigger, and invertibility.
 
+## Physics sandbox (expanded)
+
+`sandbox/physics_sandbox.py` runs the full cell simulation with physics constraints:
+
+- Memristor pinched hysteresis + magnetic hold
+- Quadratic Hopfield (no collapse)
+- Differential-triggered reinjection
+- Virtual breadboard (GREEN)
+- **CellStack**: BC-DC / TC-AC / QC-RC three-cell stack, R27 target, measured D against CENTER, power-off hold, reinjection on drift
+
+Run: `python sandbox/physics_sandbox.py`. All tests pass. This is pure simulation — no hardware budget, no measured B-field, no real memristor. Status stays YELLOW until a real runner builds and measures the first differential.
+
 ## Status
 
-- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software).
-- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow, quadratic/memristor/reinject layer.
-- Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets; software latch == physical memristor.
+- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software), full cell-stack simulation with physics constraints.
+- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow, quadratic/memristor/reinject layer, three-cell balanced architecture.
+- Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets; software latch == physical memristor; R27 is a physical target rather than a simulation parameter.
 
 See `rabbit_hopping.py` for the model + tests.
 See `memory_rebuild.py` for the recall engine + tests.
 See `quadratic_memory.py` for quadratic state + memristor hold + reinject + tests.
+See `sandbox/physics_sandbox.py` for the expanded physics sandbox + cell simulation.
 See `cards/RABBIT-HOPPING.md` for the catalog card.
 See `QUADRATIC_MEMRISTOR_HOLD_REINJECT.md` for the architecture note.
