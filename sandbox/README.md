@@ -1,15 +1,27 @@
-# RABBIT-HOPPING Physics Sandbox
+# Physics Sandbox
 
-Expanded virtual breadboard with real physics constraints.
+Expanded physics sandbox with real constraints:
 
-## Files
-- `physics_sandbox.py` — core models: Memristor, QuadraticHopfield, ReinjectionLoop, VirtualBreadboard, CellStack
-- `physics_app.py` — interactive GUI (tkinter). Run: `python sandbox/physics_app.py`
-- `headless_runner.py` — no-display runner. Run: `python sandbox/headless_runner.py`
+- `physics_sandbox.py` — headless tests (memristor, quadratic Hopfield, reinjection, CellStack, virtual breadboard)
+- `physics_app.py` — interactive GUI (tkinter + numpy + scipy)
+- `headless_runner.py` — runs the same models without a display
+- `build_linux_app.sh` — builds a portable Linux AppImage
+- `run_linux.sh` — quick launcher
+- `LINUX_APP.md` — download and run instructions
 
-## Status
-SIMULATION ONLY. No hardware. Yellow until real measurements.
+## Run GUI
+```bash
+python3 sandbox/physics_app.py
+```
 
-## Tests
-`python sandbox/physics_sandbox.py` — all pass.
-`python sandbox/headless_runner.py` — produces text visual snapshot.
+## Build AppImage (Linux)
+```bash
+./sandbox/build_linux_app.sh
+```
+
+## Headless test
+```bash
+python3 sandbox/headless_runner.py
+```
+
+Status: SIMULATION ONLY. Yellow until real measurements.
