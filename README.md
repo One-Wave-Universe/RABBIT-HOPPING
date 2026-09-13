@@ -91,6 +91,10 @@ python sandbox/physics_app.py
 
 Four tabs: Cell Stack (live differentials, R27, magnetic hold, reinjection), Memristor (pinched hysteresis), Quadratic Hopfield (recall + energy), Reinjection (differential trigger log).
 
+## Jetson / Laptop terminal
+
+See `sandbox/JETSON_TERMINAL.md` for clone + install + run commands on Jetson Nano/Orin or any Linux laptop.
+
 ## Status
 
 - Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software), full cell-stack simulation with physics constraints, interactive GUI app.
@@ -102,5 +106,6 @@ See `memory_rebuild.py` for the recall engine + tests.
 See `quadratic_memory.py` for quadratic state + memristor hold + reinject + tests.
 See `sandbox/physics_sandbox.py` for the expanded physics sandbox + cell simulation.
 See `sandbox/physics_app.py` for the interactive GUI.
+See `sandbox/JETSON_TERMINAL.md` for Jetson/laptop run instructions.
 See `cards/RABBIT-HOPPING.md` for the catalog card.
 See `QUADRATIC_MEMRISTOR_HOLD_REINJECT.md` for the architecture note.
