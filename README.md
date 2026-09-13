@@ -81,9 +81,19 @@ Integrated as `QuadraticCell`: quadratic attractor + latch + reinject loop. Test
 
 Run: `python sandbox/physics_sandbox.py`. All tests pass. This is pure simulation — no hardware budget, no measured B-field, no real memristor. Status stays YELLOW until a real runner builds and measures the first differential.
 
+## Interactive app (GUI)
+
+`sandbox/physics_app.py` — live visualization. No external deps (tkinter + numpy + scipy).
+
+```bash
+python sandbox/physics_app.py
+```
+
+Four tabs: Cell Stack (live differentials, R27, magnetic hold, reinjection), Memristor (pinched hysteresis), Quadratic Hopfield (recall + energy), Reinjection (differential trigger log).
+
 ## Status
 
-- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software), full cell-stack simulation with physics constraints.
+- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software), full cell-stack simulation with physics constraints, interactive GUI app.
 - Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow, quadratic/memristor/reinject layer, three-cell balanced architecture.
 - Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets; software latch == physical memristor; R27 is a physical target rather than a simulation parameter.
 
@@ -91,5 +101,6 @@ See `rabbit_hopping.py` for the model + tests.
 See `memory_rebuild.py` for the recall engine + tests.
 See `quadratic_memory.py` for quadratic state + memristor hold + reinject + tests.
 See `sandbox/physics_sandbox.py` for the expanded physics sandbox + cell simulation.
+See `sandbox/physics_app.py` for the interactive GUI.
 See `cards/RABBIT-HOPPING.md` for the catalog card.
 See `QUADRATIC_MEMRISTOR_HOLD_REINJECT.md` for the architecture note.
