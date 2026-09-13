@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Run both Rabbit Hopping model tests and Memory Rebuild engine tests."""
+"""Run all Rabbit Hopping test suites."""
 import subprocess, sys
 
-def run(mod):
-    r = subprocess.run([sys.executable, mod], capture_output=True, text=True)
-    print(r.stdout)
+suites = ["rabbit_hopping.py", "memory_rebuild.py", "quadratic_memory.py"]
+failed = False
+for s in suites:
+    print(f"\n=== {s} ===")
+    r = subprocess.run([sys.executable, s], capture_output=False)
     if r.returncode != 0:
-        print(r.stderr)
-        sys.exit(r.returncode)
-
-if __name__ == "__main__":
-    run("rabbit_hopping.py")
-    run("memory_rebuild.py")
-    print("ALL SYSTEMS GO. Rabbit is hopping and remembering.")
+        failed = True
+        print(f"FAILED: {s}")
+if failed:
+    sys.exit(1)
+print("\nAll suites passed.")

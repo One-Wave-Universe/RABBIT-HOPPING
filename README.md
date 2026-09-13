@@ -47,7 +47,7 @@ Equal destinations must retain distinct route identity.
 
 `hierarchy_transition()` tags a packet as point/path/field. Requires explicit level, parent and branch. Arithmetic alone does not rotate anything.
 
-## Memory rebuild / recall (new)
+## Memory rebuild / recall
 
 `memory_rebuild.py` turns the reversible routes into an actual recall engine:
 
@@ -59,14 +59,24 @@ Equal destinations must retain distinct route identity.
 - validate against current context / state machine
 - emit a compact rebuild receipt (cue, route, mirrors, completion, fill, validation)
 
-The receipt is for reversibility and debugging. It is not a second full copy of the memory.
+## Quadratic memory + memristor hold + reinjection (new)
+
+`quadratic_memory.py` adds the three pieces the cell needs:
+
+- **Quadratic memory state**: higher-order energy term so similar memories separate instead of collapsing. Linear Hopfield saturates; quadratic capacity term fixes it.
+- **Memristor magnetic hold**: software latch with hysteresis + remanence. State survives power-off (passive magnetic retention), distinct from dynamic refresh.
+- **Power reinjection loop**: differential-triggered feedback. Observes measured D; reinjects only when it leaves the allowed band. Trigger = measured differential, never a timer.
+
+Integrated as `QuadraticCell`: quadratic attractor + latch + reinject loop. Tests cover separation, hold-after-power-off, differential trigger, and invertibility.
 
 ## Status
 
-- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter.
-- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow.
-- Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets.
+- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software).
+- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow, quadratic/memristor/reinject layer.
+- Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets; software latch == physical memristor.
 
 See `rabbit_hopping.py` for the model + tests.
 See `memory_rebuild.py` for the recall engine + tests.
+See `quadratic_memory.py` for quadratic state + memristor hold + reinject + tests.
 See `cards/RABBIT-HOPPING.md` for the catalog card.
+See `QUADRATIC_MEMRISTOR_HOLD_REINJECT.md` for the architecture note.
