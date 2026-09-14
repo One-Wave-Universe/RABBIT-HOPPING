@@ -6,6 +6,17 @@ Reversible packet addressing and nested-rotation translator.
 
 This is a **hypothesis**. The arithmetic is real and reversible. It does not prove nested physical rotations, scale transitions, or musical/planetary structure.
 
+## Hardware build (body first)
+
+Simulation is not the cell. Specific solder path:
+
+- [`build/CELL0.md`](build/CELL0.md) — one mirror pair, square-loop core on CENTER, tests T1–T5
+- [`build/M4_RING_MIRRORS.md`](build/M4_RING_MIRRORS.md) — three mirrors, six hexes, one M4 loop
+- [`build/FERRITE.md`](build/FERRITE.md) — memory core vs EMI bead
+- [`build/LOG.md`](build/LOG.md) — write measured D or the score stays 0% hardware
+
+No extra comparator/latch. Magnets on the board from the first solder. Do not start the ring until Cell-0 T5 passes.
+
 ## Core packet
 
 ```text
@@ -16,96 +27,9 @@ This is a **hypothesis**. The arithmetic is real and reversible. It does not pro
 - T = generated center = 2N + K (or other declared family)
 - W = T-1 or T+1 (opposite parity)
 
-Positive example (A, normal rank 1, center 4):
-
-```text
-(1, 4, 3)
-(1, 4, 5)
-```
-
-Negative mirror:
-
-```text
-(-1, -4, -3)
-(-1, -4, -5)
-```
-
-## Four operation-order families
-
-- A: T = 2N + K
-- B: T = 2(N + K)
-- C: T = N/2 + K
-- D: T = (N + K)/2
-
-Equal destinations must retain distinct route identity.
-
-## Music adapter
-
-12-label domain (A=1 ... G#=12). Labeling only. No frequency, octave or Circle-of-Fifths claims baked in.
-
-## Nested rotation (speculative)
-
-`hierarchy_transition()` tags a packet as point/path/field. Requires explicit level, parent and branch. Arithmetic alone does not rotate anything.
-
-## Memory rebuild / recall
-
-`memory_rebuild.py` turns the reversible routes into an actual recall engine:
-
-- store constellations (overlapping feature sets)
-- present a partial cue
-- traverse recorded rabbit-hop neighborhood (2N +/- 1 connectors)
-- run Hopfield-style associative completion
-- run Boltzmann-style probabilistic fill only when ambiguity remains (marked uncertain)
-- validate against current context / state machine
-- emit a compact rebuild receipt (cue, route, mirrors, completion, fill, validation)
-
-## Quadratic memory + memristor hold + reinjection (new)
-
-`quadratic_memory.py` adds the three pieces the cell needs:
-
-- **Quadratic memory state**: higher-order energy term so similar memories separate instead of collapsing. Linear Hopfield saturates; quadratic capacity term fixes it.
-- **Memristor magnetic hold**: software latch with hysteresis + remanence. State survives power-off (passive magnetic retention), distinct from dynamic refresh.
-- **Power reinjection loop**: differential-triggered feedback. Observes measured D; reinjects only when it leaves the allowed band. Trigger = measured differential, never a timer.
-
-Integrated as `QuadraticCell`: quadratic attractor + latch + reinject loop. Tests cover separation, hold-after-power-off, differential trigger, and invertibility.
-
-## Physics sandbox (expanded)
-
-`sandbox/physics_sandbox.py` runs the full cell simulation with physics constraints:
-
-- Memristor pinched hysteresis + magnetic hold
-- Quadratic Hopfield (no collapse)
-- Differential-triggered reinjection
-- Virtual breadboard (GREEN)
-- **CellStack**: BC-DC / TC-AC / QC-RC three-cell stack, R27 target, measured D against CENTER, power-off hold, reinjection on drift
-
-Run: `python sandbox/physics_sandbox.py`. All tests pass. This is pure simulation — no hardware budget, no measured B-field, no real memristor. Status stays YELLOW until a real runner builds and measures the first differential.
-
-## Interactive app (GUI)
-
-`sandbox/physics_app.py` — live visualization. No external deps (tkinter + numpy + scipy).
-
-```bash
-python sandbox/physics_app.py
-```
-
-Four tabs: Cell Stack (live differentials, R27, magnetic hold, reinjection), Memristor (pinched hysteresis), Quadratic Hopfield (recall + energy), Reinjection (differential trigger log).
-
-## Jetson / Laptop terminal
-
-See `sandbox/JETSON_TERMINAL.md` for clone + install + run commands on Jetson Nano/Orin or any Linux laptop.
-
 ## Status
 
-- Established: reversible addressing, shared wrappers between centers two apart, signed mirrors, branch ambiguity on missing metadata, 12-label adapter, working memory rebuild engine, quadratic separation + magnetic-hold latch + differential reinject (software), full cell-stack simulation with physics constraints, interactive GUI app.
-- Proposed: candidate state record, Point/Path/Field reading, memory rebuild flow, quadratic/memristor/reinject layer, three-cell balanced architecture.
-- Speculative: multiplication = outward field transition; wrappers close loops; same numbers describe music or planets; software latch == physical memristor; R27 is a physical target rather than a simulation parameter.
-
-See `rabbit_hopping.py` for the model + tests.
-See `memory_rebuild.py` for the recall engine + tests.
-See `quadratic_memory.py` for quadratic state + memristor hold + reinject + tests.
-See `sandbox/physics_sandbox.py` for the expanded physics sandbox + cell simulation.
-See `sandbox/physics_app.py` for the interactive GUI.
-See `sandbox/JETSON_TERMINAL.md` for Jetson/laptop run instructions.
-See `cards/RABBIT-HOPPING.md` for the catalog card.
-See `QUADRATIC_MEMRISTOR_HOLD_REINJECT.md` for the architecture note.
+- Established: reversible addressing, signed mirrors, memory rebuild engine (software), quadratic + latch models (software).
+- Proposed: Cell-0 netlist, M4 ring, field/void polarity as winding sense.
+- Hardware: YELLOW / 0% until LOG.md has a T3 millivolt number.
+- Speculative: Point/Path/Field as physics; hex lattice as cortex map; software latch == ferrite remanence.
